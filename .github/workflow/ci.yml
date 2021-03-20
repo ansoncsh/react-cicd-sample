@@ -1,0 +1,53 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - tools/github-actions
+
+jobs:
+  build:
+    name: Build and deploy gh-pages
+
+    env:
+      GHPAGE_SECRET: ${{secrets.PUBLISH_GH_PAGE_SECRET}}
+      COMMIT_USERNAME: ghactions[bot]
+      COMMIT_EMAIL: ghactions[bot]@users.noreply.github.com
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
+        run: |
+          git config --global user.name $COMMIT_USERNAME
+          git config --global user.email $COMMIT_EMAIL
+          git remote set-url origin https://$GHPAGE_SECRET@github.com/$GITHUB_REPOSITORY.git
+          yarn gh-pages
