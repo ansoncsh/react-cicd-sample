@@ -11,6 +11,7 @@ function App() {
           Build and deploy this React Application<br/>
           by different CI/CD tools
         </p>
+        <div>🤞🏻</div>
       </header>
     </div>
   );
