@@ -47,21 +47,21 @@ jobs:
     working_directory: ~/app
     docker:
       - image: circleci/python:2.7
-      steps:
-        # Restore build cache from build job
-        - restore_cache:
-            key: build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+    steps:
+      # Restore build cache from build job
+      - restore_cache:
+          key: build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
 
-        # List files in current directory
-        - run:
-            name: List files
-            command: ls -al
+      # List files in current directory
+      - run:
+          name: List files
+          command: ls -al
 
-        # Deploy to the S3 bucket
-        - aws-s3/sync:
-            from: build
-            to: "s3://${AWS_S3_BUCKET}/"
-            overwrite: true
+      # Deploy to the S3 bucket
+      - aws-s3/sync:
+          from: build
+          to: "s3://${AWS_S3_BUCKET}/"
+          overwrite: true
 
 workflows:
   version: 2
