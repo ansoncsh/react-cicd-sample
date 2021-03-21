@@ -17,7 +17,6 @@ deploy:
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   region: $AWS_REGION
   bucket: $AWS_S3_BUCKET
-  skip_cleanup: true
   local-dir: build
   on:
     branch: tools/travisci
