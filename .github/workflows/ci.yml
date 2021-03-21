@@ -6,7 +6,7 @@ on:
       - tools/github-actions
 
 jobs:
-  build:
+  build-and-deploy:
     name: Build and deploy gh-pages
 
     env:
