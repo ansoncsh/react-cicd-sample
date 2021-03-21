@@ -1,0 +1,77 @@
+version: 2.1
+
+orbs:
+  aws-s3: circleci/aws-s3@2.0.0
+
+jobs:
+  build:
+    working_directory: ~/app
+    docker:
+      - image: cimg/node:12.21.0
+    steps:
+      # Checkout the code
+      - checkout
+
+      # Restore the and dist dependency cache
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+
+      # Install project dependencies
+      - run:
+          name: Install dependencies
+          command: yarn
+
+      # Save the dependency cache
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+
+      # Testing
+      - run:
+          name: Run test
+          command: yarn test
+
+      # Build project
+      - run:
+          name: Building
+          command: yarn build
+
+      # Save build cache
+      - save_cache:
+          key: build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - build
+
+  deploy:
+    working_directory: ~/app
+    docker:
+      - image: circleci/python:2.7
+      steps:
+        # Restore build cache from build job
+        - restore_cache:
+            key: build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+
+        # List files in current directory
+        - run:
+            name: List files
+            command: ls -al
+
+        # Deploy to the S3 bucket
+        - aws-s3/sync:
+            from: build
+            to: "s3://${AWS_S3_BUCKET}/"
+            overwrite: true
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - tools/circleci
