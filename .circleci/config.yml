@@ -61,7 +61,6 @@ jobs:
       - aws-s3/sync:
           from: build
           to: "s3://${AWS_S3_BUCKET}/"
-          overwrite: true
 
 workflows:
   version: 2
