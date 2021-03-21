@@ -46,7 +46,7 @@ jobs:
   deploy:
     working_directory: ~/app
     docker:
-      - image: alpine:3.7
+      - image: cimg/python:3.6
     steps:
       # Restore build cache from build job
       - restore_cache:
