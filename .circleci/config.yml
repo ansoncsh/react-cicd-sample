@@ -30,7 +30,7 @@ jobs:
       # Testing
       - run:
           name: Run test
-          command: yarn test
+          command: yarn test -- --watchAll=false
 
       # Build project
       - run:
