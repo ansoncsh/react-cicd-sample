@@ -15,6 +15,10 @@ phases:
     commands:
       - yarn build
 
+cache:
+  paths:
+    - 'node_modules/**/*'
+
 artifacts:
   files:
     - "**/*"
