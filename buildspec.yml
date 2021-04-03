@@ -9,7 +9,7 @@ phases:
 
   pre_build:
     commands:
-      - yarn test
+      - yarn test -- --watchAll=false
 
   build:
     commands:
